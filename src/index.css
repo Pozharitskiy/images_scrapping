@@ -11,3 +11,38 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.container {
+  display: flex;
+  flex-direction: column;
+  background: url('./img/pamela.jpg');
+  height: calc(100vh - 50px);
+  padding: 25px 0;
+  background-size: 30%;
+  justify-content: center;
+}
+
+h2 {}
+
+input {
+  margin: 0 20px;
+  height: 25px;
+  min-width: 300px;
+}
+
+button {
+  height: 100px;
+  width: 500px;
+  background: url('./img/stifmom.webp');
+  background-size: cover;
+  background-position: 50% 20%;
+  font-size: 40px;
+  color: white;
+  letter-spacing: 10px;
+}
+
+.mainContainer {
+  background-color: rgba(255, 0, 0, 0.6);
+  padding: 30px;
+  color: white;
+}

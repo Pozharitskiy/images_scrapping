@@ -1,11 +1,14 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+
+import './index.css';
 
 const App = () => {
   const [apiKey, setApiKey] = useState('');
   const [searchEngineId, setSearchEngineId] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
   const [numImages, setNumImages] = useState(0);
+  const [error, setError] = useState(null);
 
   const fetchImages = async startIndex => {
     const searchUrl = `https://www.googleapis.com/customsearch/v1?key=${apiKey}&cx=${searchEngineId}&q=${encodeURIComponent(
@@ -39,6 +42,13 @@ const App = () => {
   }
 
   const scrapeImages = async () => {
+    const config = JSON.stringify({
+      apiKey,
+      searchEngineId
+    });
+
+    localStorage.setItem("config", config);
+
     try {
       let startIndex = 1;
       let totalImagesDownloaded = 0;
@@ -49,6 +59,7 @@ const App = () => {
 
         if (imageUrls.length === 0) {
           console.log('No more images found.');
+          setError('No more images found.')
           break;
         }
 
@@ -66,28 +77,41 @@ const App = () => {
 
       console.log('Scraping completed!');
     } catch (error) {
+      setError(error.message)
       console.error('An error occurred during scraping:', error);
     }
   }
 
+  useEffect(() => {
+    const config = localStorage.getItem("config");
+    const { apiKey, searchEngineId } = JSON.parse(config) || {};
+
+    if (apiKey && searchEngineId) {
+      setSearchEngineId(searchEngineId);
+      setApiKey(apiKey)
+    }
+  }, [])
+
   return (
-    <div>
-      <h2>
-        Query:
-        <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
-        Num:
-        <input type="number" value={numImages} onChange={(e) => setNumImages(parseInt(e.target.value, 10))} />
-      </h2>
-      <h2>
-        API Key:
-        <input type="text" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
-      </h2>
-      <h2>
-        Search Engine ID:
-        <input type="text" value={searchEngineId} onChange={(e) => setSearchEngineId(e.target.value)} />
-      </h2>
-      <div>Scraping Images...</div>
-      <button onClick={scrapeImages}>SCRAP!</button>
+    <div className="container">
+      <div className="mainContainer">
+        <h2>
+          Query:
+          <input type="text" value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} />
+          How many photos you need?
+          <input type="number" value={numImages} onChange={(e) => setNumImages(parseInt(e.target.value, 10))} />
+        </h2>
+        <h2>
+          API Key:
+          <input type="text" value={apiKey} onChange={(e) => setApiKey(e.target.value)} />
+        </h2>
+        <h2>
+          Search Engine ID:
+          <input type="text" value={searchEngineId} onChange={(e) => setSearchEngineId(e.target.value)} />
+        </h2>
+        <button onClick={scrapeImages}>Download!</button>
+        {error && <div className="errorContainer">{error}</div>}
+      </div>
     </div>
   );
 };
